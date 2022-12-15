@@ -23,7 +23,9 @@ jobs:
         # Build's context is the set of files located in the specified PATH or URL
         context: .
         # Path to the Dockerfile
-        file: Dockerfile-php
+        file: |
+          frontend/app/Dockerfile-FT
+          backend/app/Dockerfile-BK
         # Push is a shorthand for --output=type=registry
         push: true
         # List of tags
