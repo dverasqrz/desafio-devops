@@ -1,0 +1,57 @@
+name: PHP CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  CI:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Docker Login
+      uses: docker/login-action@v2.1.0
+      with:
+        username: ${{secrets.DOCKERHUB_USER}}
+        password: ${{secrets.DOCKERHUB_PWD}}
+        
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v3.2.0
+      with:
+        # Build's context is the set of files located in the specified PATH or URL
+        context: .
+        # Path to the Dockerfile
+        file: Dockerfile-php
+        # Push is a shorthand for --output=type=registry
+        push: true
+        # List of tags
+        tags: |
+          dverazs/algularprof:${{github.run_number}}
+          dverazs/springbootprof:${{github.run_number}}
+  CD:
+  
+    runs-on: ubuntu-latest
+    needs: [CI]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Kubernetes Set Context
+      uses: Azure/k8s-set-context@v3.0
+      with:
+        # Acceptable values: kubeconfig or service-account or service-principal
+        method: kubeconfig
+        # Contents of kubeconfig file
+        kubeconfig: ${{secrets.K8S_CONFIG}}
+
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v4
+      with:
+        # Path to the manifest files which will be used for deployment.
+        manifests: |
+          ../backend/app/deployment.yaml
+          ../frontend/app/deployment.yaml
+        # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
+        images: |
+          dverazs/algularprof:${{github.run_number}}
+          dverazs/springbootprof:${{github.run_number}}
