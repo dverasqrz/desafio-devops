@@ -24,7 +24,7 @@ jobs:
         context: .
         # Path to the Dockerfile
         file: |
-          ../../backend/app/Dockerfile-BK
+          ../backend/app/Dockerfile-BK
         # Push is a shorthand for --output=type=registry
         push: true
         # List of tags
@@ -49,7 +49,7 @@ jobs:
       with:
         # Path to the manifest files which will be used for deployment.
         manifests: |
-          ../../backend/app/deployment.yaml
+          ../backend/app/deployment.yaml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
         images: |
           dverazs/springbootprof:${{github.run_number}}
