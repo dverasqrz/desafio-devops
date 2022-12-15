@@ -10,9 +10,9 @@ spring:
         show_sql: true
         format_sql: true
   datasource:
-    url: ${MYSQL_DB_HOST}
-    username: ${MYSQL_DB_USER}
-    password: ${MYSQL_DB_PASS}
+    url: "jdbc:mysql://doadmin:AVNS_oVszXJLpbhPDHEanhq8@db-mysql-nyc1-banco-do-user-12782142-0.b.db.ondigitalocean.com:25060/defaultdb?ssl-mode=REQUIRED"
+    username: "doadmin"
+    password: "AVNS_oVszXJLpbhPDHEanhq8"
 
 security:
   oauth2:

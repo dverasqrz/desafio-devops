@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: dverazs/algularprof:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          tcpSocket:
+            port: 4200               # <-- live when your web server is running
+        initialDelaySeconds: 5   # <-- wait 5s before starting to probe
+        periodSeconds: 20        # <-- do this probe every 20 seconds
+        readinessProbe:
+          httpGet:
+            path: /                # <-- ready to accept connection when your home page is serving
+            port: 4200
+          initialDelaySeconds: 15
+          failureThreshold: 3
+        env:
+        - name: MYSQL_DB_HOST
+          value: "jdbc:mysql://doadmin:AVNS_oVszXJLpbhPDHEanhq8@db-mysql-nyc1-banco-do-user-12782142-0.b.db.ondigitalocean.com:25060/defaultdb?ssl-mode=REQUIRED"
+        - name: MYSQL_DB_USER
+          value: "doadmin"
+        - name: MYSQL_DB_PASS
+          value: "AVNS_oVszXJLpbhPDHEanhq8"
+        ports:
+          - containerPort: 4200
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 4200
+    targetPort: 4200
+  #type: NodePort
+  type: LoadBalancer
